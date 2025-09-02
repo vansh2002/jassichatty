@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChattyRequest {
-    private String username;
     private String email;
-    private String phoneNumber;
+    private String username;
+    private String password;
 }

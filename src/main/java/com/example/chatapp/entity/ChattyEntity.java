@@ -23,6 +23,9 @@ public class ChattyEntity {
     @Column(unique = true, name = "EMAIL")
     private String email;
 
-    @Column(unique = true, name = "PHONE_NUMBER")
-    private String phoneNumber;
+    @Column(name = "PASSWORD")
+    private String password;
+
+    @Column(name = "IS_VERIFIED")
+    private boolean isVerified;
 }

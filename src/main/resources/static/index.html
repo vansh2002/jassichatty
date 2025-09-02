@@ -47,33 +47,42 @@
 </head>
 <body class="bg-gray-100">
 
-<!-- Verification Modal (hidden by default) -->
 <div id="verification-modal" class="hidden modal-overlay">
     <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-md" id="verification-form">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold text-gray-800">Verify to Chat</h1>
             <button id="close-verification-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
         </div>
-        <p class="text-center text-gray-600 mb-4">Please verify your email to send messages.</p>
-        <form id="phone-form">
-            <div class="mb-4"><label for="phone-number" class="block text-gray-700 font-bold mb-2">Email</label><input type="text" id="phone-number" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., abc@gmail.com" required></div>
-            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition">Send Code</button>
+        <p class="text-center text-gray-600 mb-4">Please enter your username to continue.</p>
+        <form id="username-form">
+            <div class="mb-4">
+                <label for="username-input" class="block text-gray-700 font-bold mb-2">Username</label>
+                <input type="text" id="username-input" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., john_doe" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition">Continue</button>
         </form>
         <form id="code-form" class="mt-6 hidden">
-            <div class="mb-4"><label for="verification-code" class="block text-gray-700 font-bold mb-2">Verification Code</label><input type="text" id="verification-code" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter the code" required></div>
+            <div class="mb-4">
+                <label for="verification-code" class="block text-gray-700 font-bold mb-2">Verification Code</label>
+                <input type="text" id="verification-code" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter the code sent to your email" required>
+            </div>
             <button type="submit" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition">Verify</button>
+        </form>
+        <form id="password-form" class="mt-6 hidden">
+            <div class="mb-4">
+                <label for="password-input" class="block text-gray-700 font-bold mb-2">Password</label>
+                <input type="password" id="password-input" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition">Sign In</button>
         </form>
         <div id="message-box" class="mt-4 text-center text-sm font-semibold"></div>
     </div>
 </div>
 
-<!-- Chat and Video Window -->
 <div class="w-screen h-screen bg-white flex flex-col lg:flex-row" id="chat-window">
-
     <div id="video-wrapper" class="w-full h-1/3 lg:w-1/2 lg:h-full bg-black flex-shrink-0">
         <div id="player" class="w-full h-full"></div>
     </div>
-
     <div id="chat-wrapper" class="w-full flex-grow flex flex-col border-l border-gray-200">
         <header class="bg-slate-800 text-slate-100 py-2 flex justify-between items-center px-4 flex-shrink-0">
             <h2 class="text-base font-bold">Public Chat</h2>
@@ -85,12 +94,11 @@
                     <button id="show-users-btn" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Online Users</button>
                     <a href="/register.html" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Register</a>
                     <button id="signin-menu-btn" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign In</button>
+                    <button id="signout-btn" class="hidden w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 font-semibold">Sign Out</button>
                 </div>
             </div>
         </header>
-        <div id="chat-messages">
-            <!-- Messages will be appended here -->
-        </div>
+        <div id="chat-messages"></div>
         <form id="message-form" class="p-4 border-t border-gray-200 bg-white flex-shrink-0">
             <div class="flex items-center">
                 <input type="text" id="message-input" autocomplete="off" placeholder="Type a message..." class="flex-grow border-2 border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -100,7 +108,6 @@
     </div>
 </div>
 
-<!-- Modals -->
 <div id="youtube-modal" class="hidden modal-overlay">
     <div class="modal-content">
         <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Search YouTube</h3><button id="close-youtube-modal-btn" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button></div>
@@ -115,7 +122,6 @@
     </div>
 </div>
 
-<!-- JS Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
@@ -125,13 +131,17 @@
         // --- DOM Element References ---
         const verificationModal = document.getElementById('verification-modal');
         const closeVerificationModalBtn = document.getElementById('close-verification-modal-btn');
-        const chatWindow = document.getElementById('chat-window');
-        const phoneForm = document.getElementById('phone-form');
+        const usernameForm = document.getElementById('username-form');
         const codeForm = document.getElementById('code-form');
+        const passwordForm = document.getElementById('password-form');
         const messageBox = document.getElementById('message-box');
-        const chatMessages = document.getElementById('chat-messages');
         const messageForm = document.getElementById('message-form');
-        const messageInput = document.getElementById('message-input');
+        const menuBtn = document.getElementById('menu-btn');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        const signInMenuBtn = document.getElementById('signin-menu-btn');
+        const signOutBtn = document.getElementById('signout-btn');
+        const chatMessages = document.getElementById('chat-messages');
+        // ... other element references
         const showUsersBtn = document.getElementById('show-users-btn');
         const userModal = document.getElementById('user-modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
@@ -144,213 +154,151 @@
         const youtubeResults = document.getElementById('youtube-results');
         const toggleVideoBtn = document.getElementById('toggle-video-btn');
         const videoWrapper = document.getElementById('video-wrapper');
-        const menuBtn = document.getElementById('menu-btn');
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        const signInMenuBtn = document.getElementById('signin-menu-btn');
 
         // --- State Variables ---
         let stompClient = null;
-        let username = null; // Null until verified
-        let phoneNumber = null;
-        let ytPlayer = null;
-        let isYtApiReady = false;
-        let queuedVideoRequest = null;
-        // NEW: Object to store colors for each user
-        const userColors = {};
-        const colorPalette = ['#e53935', '#d81b60', '#8e24aa', '#5e35b1', '#3949ab', '#1e88e5', '#039be5', '#00acc1', '#00897b', '#43a047', '#7cb342', '#c0ca33', '#fdd835', '#ffb300', '#fb8c00', '#f4511e'];
+        let username = null;
+        const SESSION_DURATION_MINUTES = 15;
 
-        // --- YouTube Player Logic (Independent Player) ---
-        window.onYouTubeIframeAPIReady = () => {
-            isYtApiReady = true;
-            if (queuedVideoRequest) {
-                loadYtPlayer(queuedVideoRequest.videoId);
-            }
-        };
-
-        function onPlayerReady(event) {
-            event.target.mute();
+        // --- Session Management ---
+        function saveUserSession(loggedInUsername) {
+            const expiry = new Date().getTime() + (SESSION_DURATION_MINUTES * 60 * 1000);
+            const session = { username: loggedInUsername, expiry: expiry };
+            localStorage.setItem('chatUserSession', JSON.stringify(session));
+            console.log(`Session saved for ${loggedInUsername}`);
         }
 
-        function loadYtPlayer(videoId) {
-            if (!isYtApiReady) {
-                queuedVideoRequest = { videoId };
+        function checkAndRestoreSession() {
+            const sessionJSON = localStorage.getItem('chatUserSession');
+            if (!sessionJSON) return;
+
+            const session = JSON.parse(sessionJSON);
+            if (new Date().getTime() > session.expiry) {
+                localStorage.removeItem('chatUserSession');
+                console.log("Expired session cleared.");
                 return;
             }
-            if (ytPlayer) {
-                ytPlayer.loadVideoById(videoId);
+
+            // If session is valid, log the user in
+            username = session.username;
+            console.log(`Restored session for ${username}`);
+            stompClient.send("/app/chat.addUser", {}, JSON.stringify({ sender: username, type: 'JOIN' }));
+            showSingleMessage({ content: `Welcome back, ${username}!`, type: 'JOIN' });
+            updateLoginStateUI();
+        }
+
+        function signOut() {
+            if (username && stompClient) {
+                 stompClient.send("/app/chat.sendMessage", {}, JSON.stringify({ sender: username, content: `${username} has left.`, type: 'LEAVE' }));
+            }
+            localStorage.removeItem('chatUserSession');
+            location.reload();
+        }
+
+        function updateLoginStateUI() {
+            if (username) {
+                signInMenuBtn.classList.add('hidden');
+                signOutBtn.classList.remove('hidden');
             } else {
-                ytPlayer = new YT.Player('player', {
-                    height: '100%', width: '100%', videoId: videoId,
-                    playerVars: { 'playsinline': 1, 'autoplay': 1, 'controls': 1, 'rel': 0 },
-                    events: { 'onReady': onPlayerReady }
-                });
+                signInMenuBtn.classList.remove('hidden');
+                signOutBtn.classList.add('hidden');
             }
         }
 
-        async function searchYoutube() {
-            const query = youtubeSearchInput.value.trim();
-            if (!query) return;
-            youtubeResults.innerHTML = '<p class="text-center">Searching...</p>';
-            try {
-                const response = await fetch(`/api/youtube/search?query=${encodeURIComponent(query)}`);
-                if (!response.ok) throw new Error('Search failed. Check server logs and API key.');
-                const results = await response.json();
-                youtubeResults.innerHTML = '';
-                results.forEach(video => {
-                    const resultEl = document.createElement('div');
-                    resultEl.className = 'flex items-center p-2 rounded-lg hover:bg-gray-100 cursor-pointer mb-2';
-                    resultEl.addEventListener('click', () => {
-                        loadYtPlayer(video.videoId);
-                        youtubeModal.classList.add('hidden');
-                    });
-                    resultEl.innerHTML = `<img src="${video.thumbnail}" alt="thumbnail" class="w-24 h-16 object-cover rounded-md mr-4 flex-shrink-0"><span class="font-semibold text-sm">${video.title}</span>`;
-                    youtubeResults.appendChild(resultEl);
-                });
-            } catch (error) {
-                console.error('Error searching YouTube:', error);
-                youtubeResults.innerHTML = `<p class="text-center text-red-500">${error.message}</p>`;
-            }
-        }
-
-        // --- Chat & Connection Logic ---
-        // NEW: Function to get a consistent color for a username
-        function getUserColor(sender) {
-            if (!userColors[sender]) {
-                // Simple hash function to pick a color from the palette
-                let hash = 0;
-                for (let i = 0; i < sender.length; i++) {
-                    hash = sender.charCodeAt(i) + ((hash << 5) - hash);
-                }
-                const index = Math.abs(hash % colorPalette.length);
-                userColors[sender] = colorPalette[index];
-            }
-            return userColors[sender];
-        }
-
-        function showSingleMessage(message) {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message-box');
-            const isOwnMessage = message.sender === username;
-
-            if (message.type === 'JOIN') {
-                messageElement.classList.add('system');
-                messageElement.textContent = message.content;
-            } else {
-                messageElement.classList.add(isOwnMessage ? 'own' : 'other');
-                const senderSpan = document.createElement('span');
-                senderSpan.className = 'font-bold block mb-1 text-sm';
-                senderSpan.textContent = isOwnMessage ? 'You' : message.sender;
-
-                if (isOwnMessage) {
-                    senderSpan.style.color = '#d1d5db'; // Light gray for "You"
-                } else {
-                    // MODIFIED: Set a random, consistent color for other users
-                    senderSpan.style.color = getUserColor(message.sender);
-                }
-
-                messageElement.prepend(senderSpan);
-                messageElement.append(document.createTextNode(message.content));
-            }
-            chatMessages.prepend(messageElement);
-        }
-
-        async function connectAsGuest() {
+        // --- WebSocket Connection ---
+        async function connect() {
             const socket = new SockJS('/ws');
             stompClient = Stomp.over(socket);
             stompClient.connect({}, () => {
+                console.log('WebSocket Connected!');
                 stompClient.subscribe('/topic/public', payload => showSingleMessage(JSON.parse(payload.body)));
                 fetchChatHistory();
-            }, () => {
+                checkAndRestoreSession(); // Check for a session AFTER connection is established
+            }, (error) => {
+                console.error('Could not connect to WebSocket server. Please refresh and try again.', error);
                 chatMessages.innerHTML = '<p class="text-center text-red-500">Could not connect to the chat service.</p>';
             });
         }
 
-        async function fetchChatHistory() {
-            try {
-                const response = await fetch('/api/public-chat/history');
-                if (response.ok) (await response.json()).reverse().forEach(showSingleMessage);
-            } catch (e) { console.error('Error fetching chat history:', e); }
+        // --- Verification & Login Logic ---
+        function handleSuccessfulLogin(loggedInUsername) {
+            username = loggedInUsername;
+            saveUserSession(username); // Save the session
+            updateLoginStateUI(); // Update UI
+            messageBox.textContent = "Login successful!";
+            messageBox.style.color = 'green';
+            stompClient.send("/app/chat.addUser", {}, JSON.stringify({ sender: username, type: 'JOIN' }));
+            setTimeout(resetAndCloseModal, 1500);
         }
-
-        function sendMessage(event) {
-            event.preventDefault();
-            if (!username) {
-                verificationModal.classList.remove('hidden');
-                return;
-            }
-            const content = messageInput.value.trim();
-            if (content && stompClient) {
-                stompClient.send("/app/chat.sendMessage", {}, JSON.stringify({ sender: username, content, type: 'CHAT' }));
-                messageInput.value = '';
-            }
-        }
-
-        async function fetchAndDisplayUsers() {
-            try {
-                const response = await fetch('/api/users/online');
-                const users = await response.json();
-                userList.innerHTML = '';
-                if (users.length > 0) {
-                    users.forEach(user => {
-                        const li = document.createElement('li');
-                        li.textContent = user === username ? 'You (Online)' : user;
-                        li.className = 'bg-gray-100 rounded-lg p-2';
-                        userList.appendChild(li);
-                    });
-                } else {
-                    userList.innerHTML = '<li class="text-gray-500">No other users online.</li>';
-                }
-                userModal.classList.remove('hidden');
-            } catch (e) { console.error('Error fetching users:', e); }
-        }
-
-        // --- Verification & Event Listeners ---
-        phoneForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            phoneNumber = document.getElementById('phone-number').value;
-            const response = await fetch('/api/verify/send-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phoneNumber }) });
-            messageBox.textContent = await response.text();
-            messageBox.style.color = response.ok ? 'green' : 'red';
-            if (response.ok) {
-                phoneForm.classList.add('hidden');
-                codeForm.classList.remove('hidden');
-            }
-        });
 
         codeForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-            phoneNumber = document.getElementById('phone-number').value;
+            // ... (button disabling logic)
+            const usernameValue = document.getElementById('username-input').value;
             const code = document.getElementById('verification-code').value;
-            const response = await fetch('/api/verify/check-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phoneNumber, code }) });
-            const resultText = await response.text();
+            try {
+                const response = await fetch('/api/verify/check-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: usernameValue, code })
+                });
+                if (response.ok) {
+                    const resultText = await response.text();
+                    handleSuccessfulLogin(resultText); // Use the new handler
+                } else {
+                    // ... (error handling)
+                }
+            } catch(error) {
+                // ... (error handling)
+            }
+        });
 
-            if (response.ok) {
-                username = resultText;
-                messageBox.textContent = "Verification successful!";
-                messageBox.style.color = 'green';
-
-                stompClient.send("/app/chat.addUser", {}, JSON.stringify({ sender: username, type: 'JOIN' }));
-
-                chatMessages.innerHTML = '';
-                fetchChatHistory();
-
-                setTimeout(() => {
-                    verificationModal.classList.add('hidden');
-                    phoneForm.classList.remove('hidden');
-                    codeForm.classList.add('hidden');
-                    messageBox.textContent = '';
-                }, 1000);
-
-            } else {
-                messageBox.textContent = resultText;
-                messageBox.style.color = 'red';
+        passwordForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            // ... (button disabling logic)
+            const usernameValue = document.getElementById('username-input').value;
+            const password = document.getElementById('password-input').value;
+            try {
+                const response = await fetch('/api/verify/password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: usernameValue, password: password })
+                });
+                if (response.ok) {
+                    const resultText = await response.text();
+                    handleSuccessfulLogin(resultText); // Use the new handler
+                } else {
+                    // ... (error handling)
+                }
+            } catch(error) {
+                // ... (error handling)
             }
         });
 
         // --- Initial Setup & Event Listeners ---
-        connectAsGuest();
-        loadYtPlayer('5qap5aO4i9A');
+        connect(); // Connect to WebSocket
+        // ... (all your other event listeners: signOutBtn, messageForm, etc.)
+        signOutBtn.addEventListener('click', signOut);
 
+        // --- Placeholder for other functions and listeners ---
+        // (The code for searchYoutube, loadYtPlayer, getUserColor, showSingleMessage, fetchChatHistory, etc. remains the same)
+        let ytPlayer = null;
+        let isYtApiReady = false;
+        let queuedVideoRequest = null;
+        const userColors = {};
+        const colorPalette = ['#e53935', '#d81b60', '#8e24aa', '#5e35b1', '#3949ab', '#1e88e5', '#039be5', '#00acc1', '#00897b', '#43a047', '#7cb342', '#c0ca33', '#fdd835', '#ffb300', '#fb8c00', '#f4511e'];
+        window.onYouTubeIframeAPIReady = () => { isYtApiReady = true; if (queuedVideoRequest) { loadYtPlayer(queuedVideoRequest.videoId); } };
+        function onPlayerReady(event) { event.target.mute(); }
+        function loadYtPlayer(videoId) { if (!isYtApiReady) { queuedVideoRequest = { videoId }; return; } if (ytPlayer) { ytPlayer.loadVideoById(videoId); } else { ytPlayer = new YT.Player('player', { height: '100%', width: '100%', videoId: videoId, playerVars: { 'playsinline': 1, 'autoplay': 1, 'controls': 1, 'rel': 0 }, events: { 'onReady': onPlayerReady } }); } }
+        async function searchYoutube() { const query = youtubeSearchInput.value.trim(); if (!query) return; youtubeResults.innerHTML = '<p class="text-center">Searching...</p>'; try { const response = await fetch(`/api/youtube/search?query=${encodeURIComponent(query)}`); if (!response.ok) throw new Error('Search failed.'); const results = await response.json(); youtubeResults.innerHTML = ''; results.forEach(video => { const resultEl = document.createElement('div'); resultEl.className = 'flex items-center p-2 rounded-lg hover:bg-gray-100 cursor-pointer mb-2'; resultEl.addEventListener('click', () => { loadYtPlayer(video.videoId); youtubeModal.classList.add('hidden'); }); resultEl.innerHTML = `<img src="${video.thumbnail}" alt="thumbnail" class="w-24 h-16 object-cover rounded-md mr-4 flex-shrink-0"><span class="font-semibold text-sm">${video.title}</span>`; youtubeResults.appendChild(resultEl); }); } catch (error) { console.error('Error searching YouTube:', error); youtubeResults.innerHTML = `<p class="text-center text-red-500">${error.message}</p>`; } }
+        function getUserColor(sender) { if (!userColors[sender]) { let hash = 0; for (let i = 0; i < sender.length; i++) { hash = sender.charCodeAt(i) + ((hash << 5) - hash); } userColors[sender] = colorPalette[Math.abs(hash % colorPalette.length)]; } return userColors[sender]; }
+        function showSingleMessage(message) { const messageElement = document.createElement('div'); messageElement.classList.add('message-box'); const isOwnMessage = message.sender === username; if (message.type === 'JOIN' || message.type === 'LEAVE') { messageElement.classList.add('system'); messageElement.textContent = message.content; } else { messageElement.classList.add(isOwnMessage ? 'own' : 'other'); const senderSpan = document.createElement('span'); senderSpan.className = 'font-bold block mb-1 text-sm'; senderSpan.textContent = isOwnMessage ? 'You' : message.sender; senderSpan.style.color = isOwnMessage ? '#d1d5db' : getUserColor(message.sender); messageElement.prepend(senderSpan); const messageText = document.createTextNode(message.content); messageElement.append(messageText); } chatMessages.prepend(messageElement); }
+        async function fetchChatHistory() { try { const response = await fetch('/api/public-chat/history'); if (response.ok) (await response.json()).forEach(showSingleMessage); } catch (e) { console.error('Error fetching chat history:', e); } }
+        function sendMessage(event) { event.preventDefault(); if (!username) { verificationModal.classList.remove('hidden'); return; } const content = document.getElementById('message-input').value.trim(); if (content && stompClient) { stompClient.send("/app/chat.sendMessage", {}, JSON.stringify({ sender: username, content, type: 'CHAT' })); document.getElementById('message-input').value = ''; } }
+        async function fetchAndDisplayUsers() { try { const response = await fetch('/api/users/online'); const users = await response.json(); userList.innerHTML = ''; if (users.length > 0) { users.forEach(user => { const li = document.createElement('li'); li.textContent = user === username ? 'You (Online)' : user; li.className = 'bg-gray-100 rounded-lg p-2'; userList.appendChild(li); }); } else { userList.innerHTML = '<li class="text-gray-500">No other users online.</li>'; } userModal.classList.remove('hidden'); } catch (e) { console.error('Error fetching users:', e); } }
+        function resetAndCloseModal() { verificationModal.classList.add('hidden'); usernameForm.classList.remove('hidden'); codeForm.classList.add('hidden'); passwordForm.classList.add('hidden'); const codeButton = codeForm.querySelector('button'); if(codeButton) codeButton.disabled = false; const passwordButton = passwordForm.querySelector('button'); if(passwordButton) passwordButton.disabled = false; document.getElementById('username-input').value = ''; document.getElementById('verification-code').value = ''; document.getElementById('password-input').value = ''; messageBox.textContent = ''; }
+        usernameForm.addEventListener('submit', async (event) => { event.preventDefault(); const submitButton = usernameForm.querySelector('button'); submitButton.disabled = true; submitButton.textContent = 'Checking...'; const usernameValue = document.getElementById('username-input').value.trim(); if (!usernameValue) { messageBox.textContent = "Username cannot be empty."; messageBox.style.color = 'red'; submitButton.disabled = false; submitButton.textContent = 'Continue'; return; } try { const response = await fetch('/api/verify/send-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: usernameValue }) }); const responseText = await response.text(); if (response.ok) { if (responseText.includes("Password required")) { messageBox.textContent = "Welcome back! Please enter your password."; messageBox.style.color = 'black'; usernameForm.classList.add('hidden'); passwordForm.classList.remove('hidden'); } else { messageBox.textContent = responseText; messageBox.style.color = 'green'; usernameForm.classList.add('hidden'); codeForm.classList.remove('hidden'); } } else { messageBox.textContent = responseText; messageBox.style.color = 'red'; } } catch (error) { console.error("Error during username submission:", error); messageBox.textContent = "An error occurred. Please try again."; messageBox.style.color = 'red'; } finally { submitButton.disabled = false; submitButton.textContent = 'Continue'; } });
+        loadYtPlayer('5qap5aO4i9A');
         messageForm.addEventListener('submit', sendMessage);
         showUsersBtn.addEventListener('click', fetchAndDisplayUsers);
         closeModalBtn.addEventListener('click', () => userModal.classList.add('hidden'));
@@ -359,23 +307,10 @@
         youtubeSearchBtn.addEventListener('click', searchYoutube);
         youtubeSearchInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') searchYoutube(); });
         toggleVideoBtn.addEventListener('click', () => videoWrapper.classList.toggle('hidden'));
-        closeVerificationModalBtn.addEventListener('click', () => verificationModal.classList.add('hidden'));
-
-        menuBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            dropdownMenu.classList.toggle('hidden');
-        });
-
-        signInMenuBtn.addEventListener('click', () => {
-            verificationModal.classList.remove('hidden');
-            dropdownMenu.classList.add('hidden');
-        });
-
-        window.addEventListener('click', (event) => {
-            if (!dropdownMenu.classList.contains('hidden') && !menuBtn.contains(event.target)) {
-                dropdownMenu.classList.add('hidden');
-            }
-        });
+        closeVerificationModalBtn.addEventListener('click', resetAndCloseModal);
+        menuBtn.addEventListener('click', (event) => { event.stopPropagation(); dropdownMenu.classList.toggle('hidden'); });
+        signInMenuBtn.addEventListener('click', () => { verificationModal.classList.remove('hidden'); dropdownMenu.classList.add('hidden'); });
+        window.addEventListener('click', (event) => { if (!dropdownMenu.classList.contains('hidden') && !menuBtn.contains(event.target)) { dropdownMenu.classList.add('hidden'); } });
     });
 </script>
 </body>

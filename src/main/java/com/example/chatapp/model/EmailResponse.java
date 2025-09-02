@@ -6,10 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class ChattyResponse {
-    private String username;
-    private String email;
+public class EmailResponse {
+    private String to;
+    private String from;
+    private String txt;
+    private String subject;
 }

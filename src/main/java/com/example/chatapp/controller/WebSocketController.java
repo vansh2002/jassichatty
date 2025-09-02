@@ -26,12 +26,11 @@ public class WebSocketController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    // MODIFIED: Inject the necessary service and repository
     @Autowired
     private VerificationService verificationService;
+
     @Autowired
     private ChattyRepository chattyRepository;
-
 
     @GetMapping("/api/public-chat/history")
     public List<ChatMessage> getPublicChatHistory() {
@@ -54,8 +53,8 @@ public class WebSocketController {
         return chatMessage;
     }
 
-    @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")
+    @MessageMapping("/chat.addUser")
     public ChatMessage addUser(ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
         String username = chatMessage.getSender();
         String sessionId = headerAccessor.getSessionId();
@@ -65,8 +64,8 @@ public class WebSocketController {
             return null;
         }
 
-        if (!verifiedUsers.contains(username)) {
-            System.out.println("Unverified user attempted to join the chat: " + username);
+        if (!verifiedUsers.contains(username) || chattyRepository.findByUsername(username).isEmpty()) {
+            System.out.println("Invalid or unverified user attempted to join: " + username);
             return null;
         }
 
@@ -79,6 +78,8 @@ public class WebSocketController {
             joinMessage.setContent(username + " has joined the chat!");
             joinMessage.setSender("System");
             joinMessage.setType(ChatMessage.MessageType.JOIN);
+            publicChatHistory.add(joinMessage);
+
             return joinMessage;
         }
         return null;
@@ -99,6 +100,7 @@ public class WebSocketController {
 
             messagingTemplate.convertAndSend("/topic/public", leaveMessage);
             messagingTemplate.convertAndSend("/topic/users", onlineUsers);
+            publicChatHistory.add(leaveMessage);
 
             System.out.println("User disconnected: " + username);
         }

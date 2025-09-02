@@ -4,11 +4,12 @@ import com.example.chatapp.entity.ChattyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ChattyRepository extends JpaRepository<ChattyEntity, Long> {
-    ChattyEntity findByPhoneNumber(String phoneNumber);
 
-    ChattyEntity findByUsername(String username);
+    Optional<ChattyEntity> findByUsername(String username);
 
-    ChattyEntity findByEmail(String username);
+    Optional<ChattyEntity> findByEmail(String email);
 }

@@ -2,7 +2,12 @@ package com.example.chatapp.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 public class ChatMessage {
     private String content;
     private String sender;
@@ -13,8 +18,6 @@ public class ChatMessage {
         JOIN
     }
 
-    // Default constructor for Jackson serialization
-    public ChatMessage() {}
 
     @JsonCreator
     public ChatMessage(@JsonProperty("content") String content,

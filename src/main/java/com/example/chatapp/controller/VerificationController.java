@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.example.chatapp.service.TwilioSmsSender;
-
 @RestController
 public class VerificationController {
 
@@ -24,14 +22,21 @@ public class VerificationController {
     @Autowired
     private VerificationService verificationService;
 
-
     @PostMapping("/api/verify/send-code")
     public ResponseEntity<String> sendVerificationCode(@RequestBody Map<String, String> payload) {
-        return verificationService.sendVerificationCode(payload);
+        System.out.println("In Verification Controller" + payload);
+        return verificationService.sendVerificationCode(payload.get("username"));
     }
 
     @PostMapping("/api/verify/check-code")
     public ResponseEntity<String> checkVerificationCode(@RequestBody Map<String, String> payload, HttpSession session) {
         return verificationService.checkVerificationCode(payload, session);
+    }
+
+
+    // request from frontend will come here if email is verified
+    @PostMapping("/api/verify/password")
+    public ResponseEntity<String> verifyPassword(@RequestBody Map<String, String> payload, HttpSession session) {
+        return verificationService.verifyPassword(payload, session);
     }
 }

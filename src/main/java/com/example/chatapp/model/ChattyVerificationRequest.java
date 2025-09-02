@@ -1,15 +1,13 @@
 package com.example.chatapp.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class ChattyResponse {
-    private String username;
+@NoArgsConstructor
+@Data
+public class ChattyVerificationRequest {
     private String email;
+    private String password;
 }
